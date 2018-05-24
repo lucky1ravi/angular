@@ -20,7 +20,6 @@ import {TabViewModule} from 'primeng/primeng';
 import {TabPanel} from 'primeng/primeng';
 import {AccordionModule, AccordionTab} from 'primeng/primeng';
 import {TreeModule} from 'primeng/primeng';
-import {TreeNode} from 'primeng/primeng';
 import {PanelModule, OverlayPanelModule} from 'primeng/primeng';
 import {MenuModule, MenubarModule} from 'primeng/primeng';
 import {SliderModule} from 'primeng/primeng';
@@ -29,6 +28,7 @@ import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { CookieService } from 'ngx-cookie-service';
 import { CommonModule } from '@angular/common';  
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {FileUploadModule} from 'primeng/fileupload';
 
 @NgModule({
   declarations: [
@@ -51,7 +51,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TreeModule,
     HttpModule,
     CommonModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FileUploadModule
   ],
   providers: [
     ConsumerService,

@@ -24,9 +24,9 @@ export class ConsumerService {
 
     
  // Uses http.delete() to delete the consumer.
- deleteSingleConsumer(request: any): Observable<any> {
+ deleteConsumer(request: any): Observable<any> {
   let headers = new Headers({ 'Content-Type': 'application/json' });
- const apiUrl = environment.nactBackendApiUrl + "consumers/deleteSingleConsumer";
+ const apiUrl = environment.nactBackendApiUrl + "consumers/deleteMultipleConsumer";
     return this.http.put(apiUrl,  request);
 }
 

@@ -4,6 +4,8 @@ import { ConsumerService } from '../services/consumer.service';
 import { SelectItem, MenuItem, Message, Growl, GrowlModule } from 'primeng/primeng';
 import { environment } from '../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
+import {TreeNode} from 'primeng/primeng';
+
 
 @Component({
   selector: 'app-projects',
@@ -15,6 +17,7 @@ export class ProjectsComponent implements OnInit {
   consumersVo: ConsumerVo[];
   cols: any[];
   selectedConsumersVo: ConsumerVo[];
+  selectedConsumersCrn: string[];
   selectedConsumerVo: ConsumerVo;
   contextItems: MenuItem[];
   yearFilter: number;
@@ -30,11 +33,17 @@ export class ProjectsComponent implements OnInit {
   projectPageUrl = environment.nactUiBaseUrl + "enactUI/partners/ajax/service_partner.html#page/scheduler/s1";
   managePageUrl = environment.nactUiBaseUrl + "enactUI/partners/ajax/service_partner.html#page/franchisee/create_new_member";
   cookies: {};
+
+  //files: TreeNode[];
+  selectedFiles: TreeNode[];
+  uniqueFiles: TreeNode[];
+
   constructor(private consumerService: ConsumerService, private cookieService: CookieService) {
     
    }
 
   ngOnInit() {
+    this.selectedConsumersCrn = [];
    this.cookies = this.cookieService.getAll();
     
     this.loading = true;
@@ -50,29 +59,29 @@ export class ProjectsComponent implements OnInit {
     }, 1000);
     
       this.cols = [
-        { field: 'c_fn', header: 'Customer Details' },
-        { field: 'slo_fullname', header: 'Sales Lead Owner' },
-        { field: 'sp_fn', header: 'Lead Owner' },
+        { field: 'customerFirstName', header: 'Customer Details' },
+        { field: 'saleLeadOwnerFullName', header: 'Sales Lead Owner' },
+        { field: 'serviceProviderFirstName', header: 'Lead Owner' },
         { field: 'addr1', header: 'Street Address' },
         { field: 'city', header: 'City and State' },
         { field: 'crn', header: 'CRN' },
         { field: 'zip', header: 'Zip' },
         { field: 'bn', header: 'Company' },
-        { field: 'c_phone', header: 'Phone Number' },
-        { field: 'c_email', header: 'Email' },
+        { field: 'customerPhone', header: 'Phone Number' },
+        { field: 'customerEmail', header: 'Email' },
         { field: 'status', header: 'Status' },
-        { field: 'annual_electric_bill_i18n', header: 'Annul Electric Bill' },
-        { field: 'bill_type', header: 'Bill Type' },
-        { field: 'current_annual_consumption', header: 'Current Annual Consumption inkWh' },
+        { field: 'annualElectricBillI18n', header: 'Annul Electric Bill' },
+        { field: 'billtype', header: 'Bill Type' },
+        { field: 'currentAnnualConsumption', header: 'Current Annual Consumption inkWh' },
         { field: 'lastupdate', header: 'Last Update' },
         { field: 'utilityName', header: 'Utility Name' },
         { field: 'rateName', header: 'Rate Name' },
         { field: 'type', header: 'Type' },
-        { field: 'next_action_date', header: 'Next Action Date' },
-        { field: 'create_i18n', header: 'Created Date' },
+        { field: 'nextActionDate', header: 'Next Action Date' },
+        { field: 'createI18n', header: 'Created Date' },
         { field: 'source', header: 'Lead Source' },
-        { field: 'last_quote_amount', header: 'Last Quote' },
-        { field: 'star_rating', header: 'Rating out of 5' }
+        { field: 'lastQuoteAmount', header: 'Last Quote' },
+        { field: 'starRating', header: 'Rating out of 5' }
     ];
     //this is hard coded as of now later we need to get every value from the response received from back end.
     this.types=[
@@ -90,7 +99,7 @@ export class ProjectsComponent implements OnInit {
    
     this.contextItems = [
       { label: 'View', icon: 'fa-search', command: (event) => this.viewConsumer(this.selectedConsumerVo) },
-      { label: 'Delete', icon: 'fa-close', command: (event) => this.deleteSingleConsumer(this.selectedConsumerVo) }
+      { label: 'Delete', icon: 'fa-close', command: (event) => this.deleteConsumer() }
   ];
 
  
@@ -98,11 +107,22 @@ export class ProjectsComponent implements OnInit {
   // This method will extract the distinct lead owner.
   extractLeadOwner(){ 
     this.leadOwnerUnique = [];
-   
+    
+    this.uniqueFiles = [];
+    // var parent = <TreeNode>{};
+    // parent.label = "Team Member";
+    // parent.data = "Team Member";
+    // parent.expanded = true;
+    // parent.expandedIcon = "fa-folder-open";
+
+    
     for (let index = 0; index < this.consumersVo.length; index++) {
       var item = <SelectItem>{};
-      item.label = this.consumersVo[index].sp_fn;
-      item.value = this.consumersVo[index].sp_fn;
+      // var childran:  TreeNode;
+      item.label = this.consumersVo[index].serviceProviderFirstName;
+      item.value = this.consumersVo[index].serviceProviderFirstName;
+      // childran.label = this.consumersVo[index].serviceProviderFirstName;
+      // childran.data = this.consumersVo[index].serviceProviderFirstName;
       var bool = true;
       for (let j = 0; j < this.leadOwnerUnique.length; j++) {
         if(item.label === this.leadOwnerUnique[j].label){
@@ -112,43 +132,66 @@ export class ProjectsComponent implements OnInit {
       }
       if(bool){
         this.leadOwnerUnique.push(item);
+        //children.push(childran);
+        // this.uniqueFiles.push(childran);
       }
     }
+    //parent.children = children;
+  
   }
 
   viewConsumer(consumerVo: ConsumerVo) {
     this.msgs = [];
-    this.msgs.push({ severity: 'info', summary: 'Consumer Selected', detail: consumerVo.account_id + ' - ' + consumerVo.c_fn });
+    this.msgs.push({ severity: 'info', summary: 'Consumer Selected', detail: consumerVo.accountId + ' - ' + consumerVo.customerFirstName });
+    
 }
 
-deleteSingleConsumer(consumerVo: ConsumerVo) {
-  if (confirm("Are you sure you want to delete " + consumerVo.c_fn + "?")){
-  var crnArray = [];
-  crnArray.push(consumerVo.crn);
-  let search = new URLSearchParams();
+deleteConsumer() {
+  console.log(this.selectedConsumersCrn.length);
+  if(this.selectedConsumersCrn.length === 0){
+    this.msgs = [];
+    this.msgs.push({ severity: 'error', summary: 'Please select at least one Consumer to delete.', detail: ''});
+    return;
+  }
  
-  let request = {"crn": crnArray}
+  if (confirm("Are you sure you want to delete selected Consumer(s)?")){
+  let request = {"crn": this.selectedConsumersCrn}
  console.log(request);
-  this.consumerService.deleteSingleConsumer(request)
+  this.consumerService.deleteConsumer(request)
     .subscribe(response => {
       let index = -1;
       for (let i = 0; i < this.consumersVo.length; i++) {
-        if (this.consumersVo[i].crn == consumerVo.crn) {
+        for(let j=0; j< this.selectedConsumersCrn.length; j++){
+          if (this.consumersVo[i].crn == this.selectedConsumersCrn[j]) {
             index = i;
+            this.selectedConsumersCrn.splice(j,1);
+            console.log(this.selectedConsumersCrn);
             break;
         }
+        }
+        this.consumersVo.splice(index, 1);
     }
-    this.consumersVo.splice(index, 1);
+   
 
     this.msgs = [];
-    this.msgs.push({ severity: 'info', summary: 'Consumer Deleted', detail: consumerVo.account_id + ' - ' + consumerVo.c_fn });}
+    this.msgs.push({ severity: 'success', summary: 'Consumer(s) Deleted Successfully.', detail: ''});}
     );  
   }
   
 }
 
   onRowSelect(event) {
-    //this.selectedConsumersVo = event.data;
+    //alert(event.data.crn);
+    this.selectedConsumersCrn.push(event.data.crn);
+   console.log(this.selectedConsumersCrn);
+}
+
+onRowUnselect(event) {
+  this.selectedConsumersCrn.forEach( (item, index) => {
+    if(item === event.data.crn) this.selectedConsumersCrn.splice(index,1);
+  });
+  
+  console.log(this.selectedConsumersCrn);
 }
 
 reset() {
@@ -160,7 +203,7 @@ onYearChange(event, dt) {
   }
 
   this.yearTimeout = setTimeout(() => {
-      dt.filter(event.value, 'last_quote_amount', 'lt');
+      dt.filter(event.value, 'lastQuoteAmount', 'lt');
   }, 250);
 }
 

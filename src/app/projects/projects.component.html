@@ -1,44 +1,15 @@
-<div class="container-fluid col-sm-12 alignnav">
-    <div class="navbar-header col-sm-1" id="logo-img">
-      <a class="navbar-brand" href="javascript:;"> <img id="partner-img" class="nav-enact-photo" alt="enACT Logo" /> </a>
-    </div>
-    <div class="nav navbar-nav btn-group col-sm-8"> <a class="btn btn-default homeNavButton headerCenterButton navbar-btn" id="homeBtn" type="button" href="{{homePageUrl}}" data-url="page/sp_index">HOME</a>
-     <a class="btn btn-default salesNavButton headerCenterButton navbar-btn" id="leadBtn" type="button" href="{{projectPageUrl}}" data-url="page/scheduler/s1">PROJECTS</a>
-            <!-- <a class="btn btn-default salesNavButton headerCenterButton navbar-btn" id="reportsBtn" style="display:none;" type="button" href="#page/scheduler/reports" data-url="page/scheduler/reports">REPORTS</a> -->
-     <a class="btn btn-default headerCenterButton navbar-btn" type="button" href="{{managePageUrl}}" id="manageUserBtn" data-target="page/franchisee/create_new_member"> MANAGE USER</a>
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-primary navbar-btn dropdown-toggle configsettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-color: rgb(204, 204, 204) ! important; background: rgb(255, 255, 255) none repeat scroll 0% 0% ! important;"> <span class="glyphicon glyphicon-cog blue"></span> </button>
-        <ul class="dropdown-menu" style="margin-top: -11px; line-height: 10px ! important;">
-          <li> <a data-url="" id="showSetting" data-toggle="modal" data-target="#showSettingContainer"><i class="ace-icon fa fa-wrench"></i>Configure Platform</a> </li>
-          <li> <a href="#page/workflowSetup/index" data-url="page/workflowSetup/index" id="workflow_setup"><i class="ace-icon fa fa-indent"></i>Configure Workflow</a> </li>
-          <li> <a target="_blank" href="https://enactsystems.zendesk.com/hc/en-us"><i class="ace-icon fa fa-question-circle"></i>Help</a> </li>
-          <li class="divider"></li>
-          <li> <a href="javascript:;" id="logout-tenant-btn"><i class="ace-icon fa fa-power-off"></i>Logout</a> </li>
-        </ul>
-      </div>
-    </div>
-    <div class="nav navbar-nav navbar-right col-sm-2">
-      <!-- Header right search box -->
-      <div id="imaginary_container">
-        <div class="input-group stylish-input-group col-sm-12">
-          <input type="text" class="form-control" placeholder="Search" id="nav-search-input" autocomplete="off"> <span class="input-group-addon">
-                   <button type="submit">
-                       <span class="glyphicon glyphicon-search"></span> </button>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-   
- <div class="row">
+<div class="row">
  <div class="column left">
-     <p-tree [value]="files" selectionMode="checkbox" [(selection)]="selectedFiles" (onNodeSelect)="tt.filter($event.value, 'sp_fn', 'in')"></p-tree>
-    <p-multiSelect [options]="leadOwnerUnique" overlayVisible="true" scrollHeight="300px" defaultLabel="Team Members" (onChange)="tt.filter($event.value, 'sp_fn', 'in')"></p-multiSelect></div>
+    
+     <p-tree [value]="uniqueFiles" selectionMode="checkbox" [(selection)]="selectedFiles"
+                [propagateSelectionUp]="false" [propagateSelectionDown]="false" (onNodeSelect)="nodeSelect($event)"
+                (onNodeSelect)="onNodeUnselect($event)"></p-tree>
+    <p-multiSelect [options]="leadOwnerUnique" overlayVisible="true" scrollHeight="300px" defaultLabel="Team Members" (onChange)="tt.filter($event.value, 'serviceProviderFirstName', 'in')"></p-multiSelect></div>
 
  
  <div class="column right">
 <p-growl [value]="msgs"></p-growl>
-<p-table #tt [columns]="cols" [value]="consumersVo" [(contextMenuSelection)]="selectedConsumerVo" [contextMenu]="cm" selectionMode="multiple" [(selection)]="selectedConsumersVo" (onRowSelect)="onRowSelect($event)" [paginator]="true" [rows]="10" [first]="first" [scrollable]="true" scrollHeight="350px"  [resizableColumns]="true" [responsive]="true"  [loading]="loading" [rowsPerPageOptions]="[10,20,50]" [reorderableColumns]="true">
+<p-table #tt [columns]="cols" [value]="consumersVo" [(contextMenuSelection)]="selectedConsumerVo" [contextMenu]="cm" selectionMode="multiple" [(selection)]="selectedConsumersVo" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" [paginator]="true" [rows]="10" [first]="first" [scrollable]="true" scrollHeight="350px"  [resizableColumns]="true" [responsive]="true"  [loading]="loading" [rowsPerPageOptions]="[10,20,50]" [reorderableColumns]="true">
   <ng-template pTemplate="caption">
     Project List
     <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -57,14 +28,14 @@
       <tr>
           <th *ngFor="let col of columns" [ngSwitch]="col.field" style="overflow:visible" pResizableColumn pReorderableColumn>
         
-        <input *ngSwitchCase="'c_fn'" pInputText type="text" (input)="tt.filter($event.target.value, col.field, col.filterMatchMode)">
-        <div *ngSwitchCase="'last_quote_amount'">
+        <input *ngSwitchCase="'customerFirstName'" pInputText type="text" (input)="tt.filter($event.target.value, col.field, col.filterMatchMode)">
+        <div *ngSwitchCase="'lastQuoteAmount'">
             {{yearFilter}}
             <i class="fa fa-close" (click)="yearFilter=null;tt.filter(null, col.field, col.filterMatchMode)"></i>
             <p-slider [style]="{'width':'100%','margin-top':'8px'}" [(ngModel)]="yearFilter" [min]="0" [max]="5" (onChange)="onYearChange($event, dt)"></p-slider>
         </div>
           <p-dropdown *ngSwitchCase="'type'" [options]="types" [style]="{'width':'100%'}" (onChange)="tt.filter($event.value, col.field, 'equals')"></p-dropdown>
-          <p-multiSelect *ngSwitchCase="'bill_type'" [options]="billTypes"  defaultLabel="All Type" (onChange)="tt.filter($event.value, col.field, 'in')"></p-multiSelect>
+          <p-multiSelect *ngSwitchCase="'billtype'" [options]="billTypes"  defaultLabel="All Type" (onChange)="tt.filter($event.value, col.field, 'in')"></p-multiSelect>
     </th>
 </tr>  
     
@@ -80,7 +51,7 @@
       <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex" [pContextMenuRow]="rowData">
           <td *ngFor="let col of columns" class="ui-resizable-column">
               <span class="ui-column-title">{{col.header}}</span>
-              <div *ngIf="col.field=='c_fn' else elseBlock">
+              <div *ngIf="col.field=='customerFirstName' else elseBlock">
               <a href="{{consumerUrl}}{{rowData['crn']}}">{{rowData[col.field]}}</a>
             </div>
             <ng-template #elseBlock>{{rowData[col.field]}}</ng-template>
@@ -90,12 +61,9 @@
 
   <ng-template pTemplate="paginatorleft" let-state>
       {{state.first}}
-      <button type="button" pButton icon="fa-trash"></button>
+      <button pButton type="button"  icon="fa-trash" (click)="deleteConsumer()"></button>
+      
   </ng-template>
-  <!-- <ng-template pTemplate="paginatorright">
-      <button type="button" pButton icon="fa-cloud-upload"></button>
-      </ng-template> -->
-
 
   <ng-template pTemplate="emptymessage" let-columns>
       <tr>
