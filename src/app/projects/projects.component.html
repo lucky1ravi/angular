@@ -1,55 +1,72 @@
-<div class="row">
- <div class="column left">
-    
-     <p-tree [value]="uniqueFiles" selectionMode="checkbox" [(selection)]="selectedFiles"
-                [propagateSelectionUp]="false" [propagateSelectionDown]="false" (onNodeSelect)="nodeSelect($event)"
-                (onNodeSelect)="onNodeUnselect($event)"></p-tree>
-    <p-multiSelect [options]="leadOwnerUnique" overlayVisible="true" scrollHeight="300px" defaultLabel="Team Members" (onChange)="tt.filter($event.value, 'serviceProviderFirstName', 'in')"></p-multiSelect></div>
 
- 
- <div class="column right">
+ <div class="row maincontent ui-g-12">       
+ <div class="column left ui-g-2 corporateList">
+    <!--<p-tree [value]="uniqueFiles" selectionMode="checkbox" [(selection)]="selectedFiles"
+                [propagateSelectionUp]="false" [propagateSelectionDown]="false" (onNodeSelect)="nodeSelect($event)"
+                (onNodeSelect)="onNodeUnselect($event)"></p-tree>-->
+    <p-multiSelect [options]="leadOwnerUnique" overlayVisible="true" scrollHeight="300px" defaultLabel="Team Members" (onChange)="tt.filter($event.value, 'serviceProviderFirstName', 'in')"></p-multiSelect></div>
+   
+ <div class="column right ui-g-10">
 <p-growl [value]="msgs"></p-growl>
-<p-table #tt [columns]="cols" [value]="consumersVo" [(contextMenuSelection)]="selectedConsumerVo" [contextMenu]="cm" selectionMode="multiple" [(selection)]="selectedConsumersVo" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" [paginator]="true" [rows]="10" [first]="first" [scrollable]="true" scrollHeight="350px"  [resizableColumns]="true" [responsive]="true"  [loading]="loading" [rowsPerPageOptions]="[10,20,50]" [reorderableColumns]="true">
+<p-table #tt [columns]="cols" class="leadstable" [value]="consumersVo" [(contextMenuSelection)]="selectedConsumerVo" [contextMenu]="cm" selectionMode="multiple" [(selection)]="selectedConsumersVo" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" [paginator]="true" [rows]="10" [first]="first" [scrollable]="true" scrollHeight="350px"  [resizableColumns]="true" [responsive]="true"  [loading]="loading" [rowsPerPageOptions]="[10,20,50]" [reorderableColumns]="true">
   <ng-template pTemplate="caption">
-    Project List
-    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-        <input type="text" pInputText size="50" placeholder="Search Lead" (input)="tt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      <div class="ui-g-3">
+          
+      </div>
+       
+   <div class="ui-g-9 leadactionoptions">         
         <div class="ui-helper-clearfix">
-            <button type="button" pButton icon="fa-file-o" iconPos="left" label="All Data" (click)="tt.exportCSV()" style="float:left"></button>
-            <button type="button" pButton icon="fa-file" iconPos="left" label="Selection Only" (click)="tt.exportCSV({selectionOnly:true})" style="float:right"></button>
-        </div>
+            <button type="button" pButton icon="fa-trash" title="delete"></button>
+            <button type="button" pButton icon="fa-upload" title="upload"></button> <span class="helpico" (click)="op.toggle($event)">Help?</span>          
+            <button type="button" pButton icon="fa-file-pdf-o" iconPos="left" title="Convert to PDF" (click)="convertToPDF()"></button>
+            <button type="button" pButton icon="fa-file-o" iconPos="left" title="All Data" (click)="tt.exportCSV()"></button>
+            <button type="button" pButton icon="fa-file-o" iconPos="left" title="Selection Only" (click)="tt.exportCSV({selectionOnly:true})"></button>
+            <input type="text" pInputText size="30" placeholder="Search Lead" (input)="tt.filterGlobal($event.target.value, 'contains')">
+        </div>  
+        <p-overlayPanel #op [dismissable]="true" [showCloseIcon]="true" class="uploadhelpcontent">
+                <h3 class="popover-title">How to bulk upload leads</h3>
+                <div class="popover-content">1. You can use only CSV format for upload of Leads function, as given in the 
+                    <a href="../../samples/uploadFormat.csv">uploadFormat.CSV file (Click to download)</a>. 
+                    A CSV file can be edited by many different editors, including Microsoft Excel, Notepad etc. <br><br>
+                    2. First row of the given file will be treated as field names.<br><br>
+                    3. Basic information required per Lead is First Name, Last Name, Street Address, Zip, Consumer Email.<br><br>
+                    4. Other optional details can be added during upload on a per Lead basis. Example: Service Provider Email, Consumer Type, Phone Number, Usage Details etc.<br><br>
+                    5. Consumer Type is either C or R to indicate Commercial or Residential.<br><br>
+                    6. You can upload a maximum of 100 Leads at any one time. System allows multiple uploads.				<br><br>7. Please ensure your file size does not exceed 5 MB. 				<br><br>8. Projects are identified by consumer email address and during upload process all duplicate records will be ignored from the CSV file. 				<br><br>9. Please test your upload with a sample file before you upload the actual data. 				</div>
+         </p-overlayPanel>
+                 
+    </div>
 </ng-template>
 <ng-template pTemplate="colgroup" let-columns>
     <colgroup>
-        <col *ngFor="let col of columns" style="width:200px">
+        <col *ngFor="let col of columns" style="width:200px;">
     </colgroup>
 </ng-template>
-  <ng-template pTemplate="header" let-columns>
-      <tr>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field" style="overflow:visible" pResizableColumn pReorderableColumn>
-        
-        <input *ngSwitchCase="'customerFirstName'" pInputText type="text" (input)="tt.filter($event.target.value, col.field, col.filterMatchMode)">
-        <div *ngSwitchCase="'lastQuoteAmount'">
-            {{yearFilter}}
-            <i class="fa fa-close" (click)="yearFilter=null;tt.filter(null, col.field, col.filterMatchMode)"></i>
-            <p-slider [style]="{'width':'100%','margin-top':'8px'}" [(ngModel)]="yearFilter" [min]="0" [max]="5" (onChange)="onYearChange($event, dt)"></p-slider>
-        </div>
-          <p-dropdown *ngSwitchCase="'type'" [options]="types" [style]="{'width':'100%'}" (onChange)="tt.filter($event.value, col.field, 'equals')"></p-dropdown>
-          <p-multiSelect *ngSwitchCase="'billtype'" [options]="billTypes"  defaultLabel="All Type" (onChange)="tt.filter($event.value, col.field, 'in')"></p-multiSelect>
-    </th>
-</tr>  
-    
+  <ng-template pTemplate="header" let-columns>    
     <tr>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngSwitch]="col.field" pResizableColumn  style="overflow:visible" pReorderableColumn>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngSwitch]="col.field" pResizableColumn   class="tblheader" pReorderableColumn>
               {{col.header}}
                   <p-sortIcon [field]="col.field"></p-sortIcon>
           </th>
       </tr>
-              
+        
+   <!--   <tr>
+        <th *ngFor="let col of columns" [ngSwitch]="col.field"  pResizableColumn pReorderableColumn>
+      
+      <input *ngSwitchCase="'customerFirstName'" pInputText type="text" (input)="tt.filter($event.target.value, col.field, col.filterMatchMode)">
+      <div *ngSwitchCase="'lastQuoteAmount'">
+          {{yearFilter}}
+          <i class="fa fa-close" (click)="yearFilter=null;tt.filter(null, col.field, col.filterMatchMode)"></i>
+          <p-slider [style]="{'width':'100%','margin-top':'8px'}" [(ngModel)]="yearFilter" [min]="0" [max]="5" (onChange)="onYearChange($event, dt)"></p-slider>
+      </div>
+        <p-dropdown *ngSwitchCase="'type'" [options]="types" [style]="{'width':'100%'}" (onChange)="tt.filter($event.value, col.field, 'equals')"></p-dropdown>
+        <p-multiSelect *ngSwitchCase="'billtype'" [options]="billTypes"  defaultLabel="All Type" (onChange)="tt.filter($event.value, col.field, 'in')"></p-multiSelect>
+  </th>
+</tr>  -->
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr [pSelectableRow]="rowData" [pSelectableRowIndex]="rowIndex" [pContextMenuRow]="rowData">
-          <td *ngFor="let col of columns" class="ui-resizable-column">
+          <td *ngFor="let col of columns" class="ui-resizable-column tbldata">
               <span class="ui-column-title">{{col.header}}</span>
               <div *ngIf="col.field=='customerFirstName' else elseBlock">
               <a href="{{consumerUrl}}{{rowData['crn']}}">{{rowData[col.field]}}</a>
@@ -60,10 +77,9 @@
   </ng-template>
 
   <ng-template pTemplate="paginatorleft" let-state>
-      {{state.first}}
-      <button pButton type="button"  icon="fa-trash" (click)="deleteConsumer()"></button>
-      
-  </ng-template>
+       {{state.first}}   
+   </ng-template>
+
 
   <ng-template pTemplate="emptymessage" let-columns>
       <tr>

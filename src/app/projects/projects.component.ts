@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ConsumerVo } from '../models/consumer-vo';
 import { ConsumerService } from '../services/consumer.service';
-import { SelectItem, MenuItem, Message, Growl, GrowlModule } from 'primeng/primeng';
+import { SelectItem, Message, Growl, GrowlModule } from 'primeng/primeng';
+import {MenuItem} from 'primeng/api';
 import { environment } from '../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
-import {TreeNode} from 'primeng/primeng';
-
+import {TreeNode} from 'primeng/api';
+declare let jsPDF;
 
 @Component({
   selector: 'app-projects',
@@ -46,7 +47,7 @@ export class ProjectsComponent implements OnInit {
     this.selectedConsumersCrn = [];
    this.cookies = this.cookieService.getAll();
     
-    this.loading = true;
+    this.loading = false;
     setTimeout(() => {
       this.consumerService.getListOfProjects()
     .subscribe(response => {
@@ -83,6 +84,7 @@ export class ProjectsComponent implements OnInit {
         { field: 'lastQuoteAmount', header: 'Last Quote' },
         { field: 'starRating', header: 'Rating out of 5' }
     ];
+      
     //this is hard coded as of now later we need to get every value from the response received from back end.
     this.types=[
       { label: 'All Types', value: null },
@@ -157,7 +159,7 @@ deleteConsumer() {
   if (confirm("Are you sure you want to delete selected Consumer(s)?")){
   let request = {"crn": this.selectedConsumersCrn}
  console.log(request);
-  this.consumerService.deleteConsumer(request)
+  this.consumerService.deleteSingleConsumer(request)
     .subscribe(response => {
       let index = -1;
       for (let i = 0; i < this.consumersVo.length; i++) {
@@ -207,4 +209,16 @@ onYearChange(event, dt) {
   }, 250);
 }
 
+convertToPDF(){
+  var doc = new jsPDF();
+  var col = ["Customer Details", "Sales Lead Owner", "Lead Owner"];
+  var rows = [];
+
+  for(var key in this.cols){
+      var temp = [key, this.cols[key]];
+      rows.push(temp);
+  }
+  doc.autoTable(col, rows);
+  doc.save('Test.pdf');
+  }
 }

@@ -1,0 +1,69 @@
+body{
+    margin:0 8px !important; 
+    font-family:Robotolight !important;
+    font-size:13px; 
+}
+body .ui-widget, body .ui-widget .ui-widget, body .ui-widget input, body .ui-widget select, body .ui-widget textarea, body .ui-widget button{
+    font-family:Robotolight !important;
+}
+.ui-button{
+    background:#00a9c4 !important;
+    border-radius:0 !important;
+}
+.ui-button-text{
+    background:transparent !important;
+    font-family:Robotolight;
+}
+.leadstable .ui-table-caption{
+    float:left;
+    width:100%;
+}
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active{
+    background:#d8d8d8 !important;
+    color:#000 !important; 
+}
+body .ui-paginator .ui-paginator-pages .ui-paginator-page{
+    color:#000 !important;
+    padding:10px 15px !important;
+}
+.ui-table-reorder-indicator-down{display:none !important;}
+.fa-arrow-down:before{display:none !important;}
+body .ui-state-active, body .ui-state-highlight{
+    background-color: #DCDCD8 !important;
+    color: black !important;
+}
+.ui-sortable-column-icon{
+    color:#00a9c4 !important;
+}
+.ui-overlaypanel-content {
+    padding:0 !important;
+}
+.leadstable .ui-table-caption{
+    height:80px;
+    padding: 0px 10px;
+    background:#fafafa;
+}
+.ui-table-scrollable-wrapper {position: relative;float: left; width: 100%;}
+.ui-table-scrollable-body{ overflow:hidden;}
+.ui-button-text-only .ui-button-text {
+    padding: .5em 1em !important;
+}
+body .ui-paginator .ui-paginator-first, body .ui-paginator .ui-paginator-prev, body .ui-paginator .ui-paginator-next, body .ui-paginator .ui-paginator-last{
+    color:#c6c6c6 !important;
+    padding:0.8em 0.8em !important;
+}
+.multiselectlist .ui-multiselect{float:left; width:100%;}
+.ui-table-resizable .ui-table-thead > tr > th, .ui-table-resizable .ui-table-tfoot > tr > td, .ui-table-resizable .ui-table-data > tr > td{
+    overflow:visible !important;
+    text-align: left;
+}
+.billtypedrpdwn, .typedrpdwn{
+    position:fixed;
+    z-index:10;
+}
+body .ui-button{
+    padding:6px 22px !important;
+}
+.ui-button-icon-only .fa{
+    font-size:16px !important;
+}
